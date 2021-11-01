@@ -45,14 +45,26 @@ async function run() {
             console.log(result);
           res.send(result)
         })
+          // confrom order
+          app.post('/confrom', async(req,res)=>{
+            console.log('confrom')
+            const orderConfrom=req.body;
+            console.log('hit the psot api',orderConfrom);
+
+            const result =await Collactions.insertOne(orderConfrom)
+            console.log(result);
+          res.send(result)
+          })
 
         //delete services
         app.delete('/servces/:id', async(req,res)=>{
-          const id = req.params.id;
-          const query={_id:ObjectId(id)};
-          const result = await serviceCollactions.deleteOne(query);
-          res.json(result)
+          const result =await serviceCollactions.deleteOne({
+            _id:ObjectId(req.params.id),
+         });
+         console.log(result);
         })
+
+
 
         // confrom orders
         app.post('/confroms',(req,res)=>{
@@ -60,6 +72,8 @@ async function run() {
          Collactions.insertOne(req.body).then((result)=>res.send(result.insertedId))
         });
      
+
+
          // get my oder
          app.get('/myOders/:email', async(req,res)=>{
           console.log(req.params.email);
@@ -69,14 +83,18 @@ async function run() {
           res.send(result);
       });
 
+
+
       //delete from my order
-     app.delete('/deleteProduct/id', async(req,res)=>{
+     app.delete('/deleteProduct/:id', async(req,res)=>{
        console.log(req.params.id);
        const result =await orderCollactions.deleteOne({
-         _id:Object(req.params.id),
+         _id:ObjectId(req.params.id),
       });
       console.log(result);
      });
+
+
 
         // Add Order
         app.post('/addOrder',(req,res)=>{
