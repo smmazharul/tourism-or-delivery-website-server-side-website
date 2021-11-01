@@ -1,7 +1,7 @@
 
 //import
 require("dotenv").config();
-
+const ObjectId =require('mongodb').ObjectId;
 const express= require('express');
 const cors= require('cors');
 const { MongoClient } = require('mongodb');
@@ -25,6 +25,7 @@ async function run() {
       const database = client.db("Aahar-food-delivery");
       const serviceCollactions = database.collection("service");
       const orderCollactions = database.collection("orders");
+      const Collactions = database.collection("orderCollection");
       
 
       //GET API
@@ -45,23 +46,47 @@ async function run() {
           res.send(result)
         })
 
+        //delete services
+        app.delete('/servces/:id', async(req,res)=>{
+          const id = req.params.id;
+          const query={_id:ObjectId(id)};
+          const result = await serviceCollactions.deleteOne(query);
+          res.json(result)
+        })
+
+        // confrom orders
+        app.post('/confroms',(req,res)=>{
+         console.log(req.body);
+         Collactions.insertOne(req.body).then((result)=>res.send(result.insertedId))
+        });
+     
          // get my oder
          app.get('/myOders/:email', async(req,res)=>{
           console.log(req.params.email);
-          const result =await orderCollactions.find({email: req.params.email}).toArray();
+          const result =await orderCollactions
+          .find({email: req.params.email})
+          .toArray();
           res.send(result);
-      })
+      });
 
+      //delete from my order
+     app.delete('/deleteProduct/id', async(req,res)=>{
+       console.log(req.params.id);
+       const result =await orderCollactions.deleteOne({
+         _id:Object(req.params.id),
+      });
+      console.log(result);
+     });
 
         // Add Order
         app.post('/addOrder',(req,res)=>{
           console.log(req.body);
           orderCollactions.insertOne(req.body).then((result)=>{
             res.send(result);
-          })
+          });
 
 
-       })
+       });
      
 
 
